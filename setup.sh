@@ -1,5 +1,4 @@
 sudo apt update
-sudo apt install net-tools
 sudo apt install python3-pip
 sudo apt install python3-flask
 sudo apt install net-tools
