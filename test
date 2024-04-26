@@ -1,0 +1,49 @@
+from flask import Flask, render_template, jsonify, redirect, url_for, session
+import psutil
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'  # Set a secret key for session management
+
+# Function to get system resource data
+def get_system_resources():
+    disk_usage = psutil.disk_usage('/')
+    memory_usage = psutil.virtual_memory()
+
+    return {
+        'disk': {
+            'total': disk_usage.total,
+            'used': disk_usage.used,
+            'free': disk_usage.free
+        },
+        'memory': {
+            'total': memory_usage.total,
+            'used': memory_usage.used,
+            'free': memory_usage.available
+        }
+    }
+
+# Route to get system resource data
+@app.route('/data')
+def get_data():
+    data = get_system_resources()
+    return jsonify(data)
+
+# Route for the home page
+@app.route('/home')
+def home():
+    # Check if user is logged in
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('index.html', title='Home')
+
+# Route for the dashboard
+@app.route('/dashboard')
+def dashboard():
+    # Add any necessary logic here
+    return render_template('dashboard.html', title='Dashboard')
+
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=True)
+
