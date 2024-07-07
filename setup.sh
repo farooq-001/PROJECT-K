@@ -36,4 +36,4 @@ deactivate
 
 unzip pycache.zip  && unzip static.zip && unzip templates.zip
 rm -rf pycache.zip static.zip  templates.zip
-./run.sh
+bash run.sh
