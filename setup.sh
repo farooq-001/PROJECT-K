@@ -1,10 +1,27 @@
-# Check package manager and install required system packages
+#!/bin/bash
+
+# Detect package manager
+if command -v apt &> /dev/null; then
+    PKG_MANAGER="apt"
+elif command -v yum &> /dev/null; then
+    PKG_MANAGER="yum"
+elif command -v dnf &> /dev/null; then
+    PKG_MANAGER="dnf"
+else
+    echo "Unsupported package manager. Exiting."
+    exit 1
+fi
+
+# Update repositories and install required system packages
 if [ "$PKG_MANAGER" == "apt" ]; then
     sudo apt update
-    sudo apt install -y python3-pip python3-venv net-tools
+    sudo apt install -y python3-pip python3-venv net-tools unzip
+elif [ "$PKG_MANAGER" == "yum" ] || [ "$PKG_MANAGER" == "dnf" ]; then
+    sudo $PKG_MANAGER -y update
+    sudo $PKG_MANAGER -y install python3-pip python3-venv net-tools unzip
 else
-    sudo $PKG_MANAGER update
-    sudo $PKG_MANAGER install -y python3-pip python3-venv net-tools
+    echo "Unsupported package manager. Exiting."
+    exit 1
 fi
 
 # Create and activate virtual environment
@@ -34,6 +51,16 @@ done
 # Deactivate the virtual environment after installation
 deactivate
 
-unzip pycache.zip  && unzip static.zip && unzip templates.zip
-rm -rf pycache.zip static.zip  templates.zip
-bash run.sh
+# Unzip required files and clean up
+unzip -q pycache.zip
+unzip -q static.zip
+unzip -q templates.zip
+rm -f pycache.zip static.zip templates.zip
+
+# Execute the run script (assuming it's present and correctly configured)
+if [ -f "run.sh" ]; then
+    bash run.sh
+else
+    echo "run.sh not found. Exiting."
+    exit 1
+fi
