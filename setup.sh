@@ -1,33 +1,19 @@
-#!/bin/bash
-
-# Determine the package manager
-if command -v dnf >/dev/null 2>&1; then
-    PKG_MANAGER="dnf"
-elif command -v yum >/dev/null 2>&1; then
-    PKG_MANAGER="yum"
-elif command -v apt >/dev/null 2>&1; then
-    PKG_MANAGER="apt"
-else
-    echo "Unsupported distribution"
-    exit 1
-fi
-
-# Update package lists
+# Check package manager and install required system packages
 if [ "$PKG_MANAGER" == "apt" ]; then
     sudo apt update
+    sudo apt install -y python3-pip python3-venv net-tools
 else
-    sudo $PKG_MANAGER update -y
+    sudo $PKG_MANAGER update
+    sudo $PKG_MANAGER install -y python3-pip python3-venv net-tools
 fi
 
-# Install Python 3, pip, Flask, and net-tools
-if [ "$PKG_MANAGER" == "apt" ]; then
-    sudo apt install -y python3-pip python3-flask net-tools
-else
-    sudo $PKG_MANAGER install -y python3-pip python3-flask net-tools
-fi
+# Create and activate virtual environment
+python3 -m venv myenv
+source myenv/bin/activate
 
-# Install other packages using pip
+# Install Python packages using pip in the virtual environment
 packages=(
+    "Flask"
     "Flask-Login"
     "Flask-WTF"
     "Flask-Bootstrap"
@@ -42,5 +28,8 @@ packages=(
 )
 
 for package in "${packages[@]}"; do
-    sudo -H pip3 install "$package"
+    pip install "$package"
 done
+
+# Deactivate the virtual environment after installation
+deactivate
