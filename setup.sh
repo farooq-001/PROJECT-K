@@ -27,6 +27,8 @@ fi
 # Create and activate virtual environment
 python3 -m venv myenv
 source myenv/bin/activate
+python -m pip install --upgrade pip
+pip install Flask Flask-Login Flask-WTF Flask-Bootstrap Flask-SQLAlchemy Flask-Migrate Flask-Admin Flask-Caching Flask-Mail Flask-RESTful psutil humanize
 
 # Install Python packages using pip in the virtual environment
 packages=(
